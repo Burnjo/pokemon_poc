@@ -2,98 +2,17 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>포켓몬 이름 변환 및 이미지 표시</title>
+  <title>오늘의 포켓몬은 뭘까요?</title>
+  <style>
+    body { text-align: center; font-family: sans-serif; }
+    img { max-width: 300px; }
+    button { font-size: 1.2em; padding: 10px 20px; margin-top: 20px; }
+  </style>
 </head>
 <body>
-  <h1>포켓몬 한글 이름 → 영어 이름 및 이미지 표시</h1>
-  <p>포켓몬 한글 이름을 입력하세요:</p>
-  <input type="text" id="pokemonName" placeholder="예: 이상해씨">
-  <button id="searchButton">변환 및 이미지 불러오기</button>
-  <div id="result"></div>
-
-  <script>
-    // HTML 파일과 같은 디렉토리에 있는 CSV 파일명을 사용
-    const csvUrl = 'pokemon_mapping.csv';
-
-    let mapping = {};
-
-    // CSV 파일을 불러와서 매핑 데이터를 생성하는 함수
-    function loadCSVMapping() {
-      console.log("CSV 파일 로드 시도:", csvUrl);
-      fetch(csvUrl)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`네트워크 응답 오류: ${response.statusText}`);
-          }
-          return response.text();
-        })
-        .then(data => {
-          console.log("CSV 데이터 원본:", data);
-          const lines = data.trim().split('\n');
-          if (lines.length === 0) {
-            console.error("CSV 파일에 데이터가 없습니다.");
-            return;
-          }
-          // 첫 줄은 헤더이므로 제거
-          const header = lines.shift();
-          console.log("CSV 헤더:", header);
-          lines.forEach(line => {
-            if(line.trim()){
-              const parts = line.split(',');
-              if (parts.length < 2) {
-                console.warn("분할 실패한 줄:", line);
-                return;
-              }
-              const [korean, english] = parts;
-              mapping[korean.trim()] = english.trim();
-            }
-          });
-          console.log('매핑 데이터 로드 완료:', mapping);
-        })
-        .catch(error => {
-          console.error('CSV 로드 오류:', error);
-        });
-    }
-
-    // 페이지 로드 시 CSV 매핑 데이터 불러오기
-    loadCSVMapping();
-
-    // 버튼 클릭 시 실행되는 함수
-    document.getElementById("searchButton").addEventListener("click", function() {
-      const inputName = document.getElementById("pokemonName").value.trim();
-      console.log("사용자 입력:", inputName);
-      const resultDiv = document.getElementById("result");
-      resultDiv.innerHTML = "";
-      if (mapping[inputName]) {
-        let englishName = mapping[inputName];
-        console.log(`영어 이름: ${englishName}`);
-        // 영어 이름을 소문자로 변환
-        englishName = englishName.toLowerCase();
-        console.log(`소문자로 변환된 영어 이름: ${englishName}`);
-        // 포켓몬 이미지 URL 생성
-        const imageUrl = `https://img.pokemondb.net/artwork/large/${englishName}.jpg`;
-        // 영어 이름 텍스트 출력
-        const nameP = document.createElement("p");
-        nameP.textContent = `영어 이름: ${englishName}`;
-        resultDiv.appendChild(nameP);
-        // 이미지 엘리먼트 생성 및 삽입
-        const img = document.createElement("img");
-        img.src = imageUrl;
-        img.alt = englishName;
-        img.style.maxWidth = "300px";
-        img.style.display = "block";
-        img.style.marginTop = "10px";
-        // 이미지 로드 실패 시 에러 메시지 표시
-        img.onerror = function() {
-          resultDiv.innerHTML += `<p>이미지를 불러오지 못했습니다. 포켓몬 이름을 확인해 주세요.</p>`;
-        };
-        resultDiv.appendChild(img);
-        console.log(`이미지 URL: ${imageUrl}`);
-      } else {
-        resultDiv.textContent = "해당 포켓몬 이름을 찾을 수 없습니다.";
-        console.warn(`변환 실패: ${inputName}에 해당하는 데이터 없음`);
-      }
-    });
-  </script>
+  <img src="doctor_oh.png" alt="Doctor Oh">
+  <h1>오늘의 포켓몬은 뭘까요?</h1>
+  <!-- 버튼 클릭 시 random.html로 이동 -->
+  <button onclick="location.href='random.html'">오늘의 포켓몬 뽑기</button>
 </body>
 </html>
