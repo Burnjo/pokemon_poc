@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>포켓몬 이미지 찾기</title>
+</head>
+<body>
+  <h1>포켓몬 이미지 찾기</h1>
+  <p>포켓몬스터의 한글 이름을 입력하세요:</p>
+  <input type="text" id="pokemonName" placeholder="예: 이상해씨">
+  <button id="searchButton">검색</button>
+  <div id="result"></div>
+
+  <script>
+    // 간단한 한글 -> 영어 매핑 (필요에 따라 확장 가능)
+    const pokemonMapping = {
+      "이상해씨": "bulbasaur",
+      "이상해풀": "ivysaur",
+      "이상해꽃": "venusaur",
+      "파이리": "charmander",
+      "리자드": "charmeleon",
+      "리자몽": "charizard",
+      "꼬부기": "squirtle",
+      "어니부기": "wartortle",
+      "거북왕": "blastoise"
+    };
+
+    document.getElementById("searchButton").addEventListener("click", function() {
+      const inputName = document.getElementById("pokemonName").value.trim();
+      const englishName = pokemonMapping[inputName];
+      const resultDiv = document.getElementById("result");
+      resultDiv.innerHTML = ""; // 이전 결과 초기화
+
+      if (englishName) {
+        // 영어 이름을 소문자로 변환 (이미 소문자라면 생략 가능)
+        const lowerCaseName = englishName.toLowerCase();
+        // 이미지 URL 구성
+        const imageUrl = `https://img.pokemondb.net/artwork/large/${lowerCaseName}.jpg`;
+        
+        // 이미지 엘리먼트 생성 및 삽입
+        const img = document.createElement("img");
+        img.src = imageUrl;
+        img.alt = inputName;
+        img.style.maxWidth = "300px";  // 필요에 따라 크기 조정
+        // 이미지 로드 실패 시 에러 메시지 표시
+        img.onerror = function() {
+          resultDiv.innerHTML = `<p>이미지를 불러오지 못했습니다. 올바른 포켓몬 이름인지 확인해 주세요.</p>`;
+        };
+        resultDiv.appendChild(img);
+      } else {
+        resultDiv.innerHTML = "<p>해당 포켓몬 이름을 찾을 수 없습니다. 매핑 데이터에 추가해 주세요.</p>";
+      }
+    });
+  </script>
+</body>
+</html>
