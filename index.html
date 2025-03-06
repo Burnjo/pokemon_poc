@@ -2,54 +2,56 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>포켓몬 이미지 찾기</title>
+  <title>포켓몬 이름 변환</title>
 </head>
 <body>
-  <h1>포켓몬 이미지 찾기</h1>
-  <p>포켓몬스터의 한글 이름을 입력하세요:</p>
+  <h1>포켓몬 한글 이름 → 영어 이름 변환</h1>
+  <p>포켓몬 한글 이름을 입력하세요:</p>
   <input type="text" id="pokemonName" placeholder="예: 이상해씨">
-  <button id="searchButton">검색</button>
+  <button id="searchButton">변환</button>
   <div id="result"></div>
 
   <script>
-    // 간단한 한글 -> 영어 매핑 (필요에 따라 확장 가능)
-    const pokemonMapping = {
-      "이상해씨": "bulbasaur",
-      "이상해풀": "ivysaur",
-      "이상해꽃": "venusaur",
-      "파이리": "charmander",
-      "리자드": "charmeleon",
-      "리자몽": "charizard",
-      "꼬부기": "squirtle",
-      "어니부기": "wartortle",
-      "거북왕": "blastoise"
-    };
+    // CSV 파일의 raw URL을 입력하세요.
+    const csvUrl = 'https://raw.githubusercontent.com/yourusername/yourrepo/main/pokemon_mapping.csv';
 
+    let mapping = {};
+
+    // CSV 파일을 불러와서 매핑 데이터를 생성하는 함수
+    function loadCSVMapping() {
+      fetch(csvUrl)
+        .then(response => response.text())
+        .then(data => {
+          const lines = data.trim().split('\n');
+          // 첫 줄은 헤더이므로 제거
+          lines.shift();
+          lines.forEach(line => {
+            if(line.trim()){
+              const [korean, english] = line.split(',');
+              if (korean && english) {
+                mapping[korean.trim()] = english.trim();
+              }
+            }
+          });
+          console.log('매핑 데이터 로드 완료:', mapping);
+        })
+        .catch(error => {
+          console.error('CSV 로드 오류:', error);
+        });
+    }
+
+    // 페이지 로드 시 CSV 매핑 데이터 불러오기
+    loadCSVMapping();
+
+    // 버튼 클릭 시 사용자가 입력한 한글 이름에 대응하는 영어 이름 출력
     document.getElementById("searchButton").addEventListener("click", function() {
       const inputName = document.getElementById("pokemonName").value.trim();
-      const englishName = pokemonMapping[inputName];
       const resultDiv = document.getElementById("result");
-      resultDiv.innerHTML = ""; // 이전 결과 초기화
-
-      if (englishName) {
-        // 영어 이름을 소문자로 변환 (이미 소문자라면 생략 가능)
-        const lowerCaseName = englishName.toLowerCase();
-        // 이미지 URL 구성
-        const imageUrl = `https://img.pokemondb.net/artwork/large/${lowerCaseName}.jpg`;
-        
-        // 이미지 엘리먼트 생성 및 삽입
-        const img = document.createElement("img");
-        img.src = imageUrl;
-        img.alt = inputName;
-        img.style.maxWidth = "300px";  // 필요에 따라 크기 조정
-        // 이미지 로드 실패 시 에러 메시지 표시
-        img.onerror = function() {
-          resultDiv.innerHTML = `<p>이미지를 불러오지 못했습니다. 올바른 포켓몬 이름인지 확인해 주세요.</p>`;
-        };
-        resultDiv.appendChild(img);
+      resultDiv.innerHTML = "";
+      if (mapping[inputName]) {
+        resultDiv.textContent = `영어 이름: ${mapping[inputName]}`;
       } else {
-        resultDiv.innerHTML = "<p>해당 포켓몬 이름을 찾을 수 없습니다. 매핑 데이터에 추가해 주세요.</p>";
+        resultDiv.textContent = "해당 포켓몬 이름을 찾을 수 없습니다.";
       }
     });
   </script>
