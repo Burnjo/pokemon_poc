@@ -2,13 +2,13 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <title>포켓몬 이름 변환 디버깅</title>
+  <title>포켓몬 이름 변환 및 이미지 표시</title>
 </head>
 <body>
-  <h1>포켓몬 한글 이름 → 영어 이름 변환</h1>
+  <h1>포켓몬 한글 이름 → 영어 이름 및 이미지 표시</h1>
   <p>포켓몬 한글 이름을 입력하세요:</p>
   <input type="text" id="pokemonName" placeholder="예: 이상해씨">
-  <button id="searchButton">변환</button>
+  <button id="searchButton">변환 및 이미지 불러오기</button>
   <div id="result"></div>
 
   <script>
@@ -58,15 +58,37 @@
     // 페이지 로드 시 CSV 매핑 데이터 불러오기
     loadCSVMapping();
 
-    // 버튼 클릭 시 사용자가 입력한 한글 이름에 대응하는 영어 이름 출력
+    // 버튼 클릭 시 실행되는 함수
     document.getElementById("searchButton").addEventListener("click", function() {
       const inputName = document.getElementById("pokemonName").value.trim();
       console.log("사용자 입력:", inputName);
       const resultDiv = document.getElementById("result");
       resultDiv.innerHTML = "";
       if (mapping[inputName]) {
-        resultDiv.textContent = `영어 이름: ${mapping[inputName]}`;
-        console.log(`변환 성공: ${inputName} → ${mapping[inputName]}`);
+        let englishName = mapping[inputName];
+        console.log(`영어 이름: ${englishName}`);
+        // 영어 이름을 소문자로 변환
+        englishName = englishName.toLowerCase();
+        console.log(`소문자로 변환된 영어 이름: ${englishName}`);
+        // 포켓몬 이미지 URL 생성
+        const imageUrl = `https://img.pokemondb.net/artwork/large/${englishName}.jpg`;
+        // 영어 이름 텍스트 출력
+        const nameP = document.createElement("p");
+        nameP.textContent = `영어 이름: ${englishName}`;
+        resultDiv.appendChild(nameP);
+        // 이미지 엘리먼트 생성 및 삽입
+        const img = document.createElement("img");
+        img.src = imageUrl;
+        img.alt = englishName;
+        img.style.maxWidth = "300px";
+        img.style.display = "block";
+        img.style.marginTop = "10px";
+        // 이미지 로드 실패 시 에러 메시지 표시
+        img.onerror = function() {
+          resultDiv.innerHTML += `<p>이미지를 불러오지 못했습니다. 포켓몬 이름을 확인해 주세요.</p>`;
+        };
+        resultDiv.appendChild(img);
+        console.log(`이미지 URL: ${imageUrl}`);
       } else {
         resultDiv.textContent = "해당 포켓몬 이름을 찾을 수 없습니다.";
         console.warn(`변환 실패: ${inputName}에 해당하는 데이터 없음`);
